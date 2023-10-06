@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+jsonatago = {file = ".", editable = true}
+
+[dev-packages]
+plumbum = "*"
+twine = "*"
+pytest = "*"
+
+[scripts]
+test = "pytest"
+libbuild = "python setup.py libbuild"
+dist = "python setup.py sdist"
+release = "twine upload dist/*"
+
+[requires]
+python_version = "3.11"
