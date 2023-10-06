@@ -24,7 +24,11 @@ class LibBuildCmd(Command):
 
 setup(
     name="jsonatago",
-    version="0.2.1",
+    version="0.2.2",
+    description="Your package description here",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/rados4y/jsonatago",  # Homepage link
     packages=find_packages(),
     package_data={
         "jsonatago": [
@@ -34,6 +38,9 @@ setup(
     },
     install_requires=[
         # Your dependencies here
+    ],
+    classifiers=[
+        "Development Status :: 3 - Alpha",  # Alpha status
     ],
     cmdclass={
         "libbuild": LibBuildCmd,
