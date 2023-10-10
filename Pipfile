@@ -12,7 +12,7 @@ twine = "*"
 pytest = "*"
 
 [scripts]
-test = "pytest"
+test = "pytest -s"
 libbuild = "python setup.py libbuild"
 dist = "python setup.py sdist"
 release = "twine upload dist/*"

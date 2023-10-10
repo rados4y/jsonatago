@@ -17,9 +17,13 @@ class LibBuildCmd(Command):
         python = local["python"]
         local.cwd.chdir("jsonatago/golang")
         with local.env(GOOS="windows", GOARCH="amd64"):
-            go["build", "-o", "jsonatago.dll", "-buildmode=c-shared", "main.go"]()
+            go[
+                "build", "-o", "jsonatago_windows.dll", "-buildmode=c-shared", "main.go"
+            ]()
         with local.env(GOOS="linux", GOARCH="amd64"):
-            go["build", "-o", "jsonatago.so", "-buildmode=c-shared", "main.go"]()
+            go["build", "-o", "jsonatago_linux.so", "-buildmode=c-shared", "main.go"]()
+        with local.env(GOOS="darwin", GOARCH="amd64"):
+            go["build", "-o", "jsonatago_darwin.so", "-buildmode=c-shared", "main.go"]()
 
 
 setup(

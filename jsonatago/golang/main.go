@@ -30,6 +30,13 @@ func CompileJSONata(id *C.char, expression *C.char, resultCode **C.char, resultE
 	*resultExpression = expression
 }
 
+//export FreeJSONata
+func FreeJSONata(id *C.char) {
+	mapMutex.Lock()
+	delete(exprMap, C.GoString(id))
+	mapMutex.Unlock()
+}
+
 //export EvaluateJSONata
 func EvaluateJSONata(id *C.char, jsonData *C.char, resultCode **C.char, result **C.char) {
 	mapMutex.RLock()

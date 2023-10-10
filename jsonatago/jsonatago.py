@@ -2,6 +2,7 @@ from ctypes import cdll, c_char_p, POINTER, byref
 from importlib.resources import files
 import platform
 import os
+from typing import Any
 
 
 class Jsonata:
@@ -15,10 +16,15 @@ class Jsonata:
 
         # dll_path = pkg_resources.resource_filename("jsonatago", "golang/jsonatago.dll")
         resource_dir = str(files("jsonatago") / "golang")
-        dll_path = os.path.join(
-            resource_dir,
-            "jsonatago.dll" if platform.system() == "Windows" else "jsonatago.so",
-        )
+        if platform.system() == "Windows":
+            dll_file = "jsonatago_windows.dll"
+        elif platform.system() == "Linux":
+            dll_file = "jsonatago_linux.so"
+        elif platform.system() == "Darwin":
+            dll_file = "jsonatago_darwin.so"
+        else:
+            raise Exception(f"Unsupported platform: {platform.system()}")
+        dll_path = os.path.join(resource_dir, dll_file)
         Jsonata.__lib = cdll.LoadLibrary(str(dll_path))
 
         # Set argument types and return types for CompileJSONata
@@ -56,6 +62,11 @@ class Jsonata:
             raise Exception(
                 f'JSONata compilation failed: {resultCodeCompile.value.decode("utf-8")}'
             )
+
+    def __del__(self):
+        if Jsonata.__lib is not None:
+            return
+        Jsonata.__lib.FreeJSONata(str(id(self)).encode("utf-8"))
 
     def evaluate(self, jsonData: str) -> str:
         # Data and pointers for EvaluateJSONata

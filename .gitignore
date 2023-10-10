@@ -3,3 +3,7 @@
 /jsonatago.egg-info
 /NOTE.md
 /Pipfile.lock
+**/*.pyc
+**/*.dll
+**/*.so
+**/*.h

@@ -78,5 +78,7 @@ JSONATA_TEST_DATA = """
 
 
 def test_evaluate():
-    expr = Jsonata("$sum(Account.Order.Product.(Price * Quantity))")
-    print(expr.evaluate(JSONATA_TEST_DATA))
+    print("running")
+    for i in range(1000000):
+        expr = Jsonata("$sum(Account.Order.Product.(Price * Quantity))")
+        result = expr.evaluate(JSONATA_TEST_DATA)
