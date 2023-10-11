@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages, Command
-from plumbum import local
 
 
 class LibBuildCmd(Command):
