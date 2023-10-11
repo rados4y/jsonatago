@@ -10,18 +10,18 @@ jobs:
     strategy:
       matrix:
         include:
-          #- goos: windows
-          #  goarch: amd64
-          #  ext: dll
-          #  runner: windows-latest
+          - goos: windows
+            goarch: amd64
+            ext: dll
+            runner: windows-latest
           - goos: linux
             goarch: amd64
             ext: so
             runner: ubuntu-latest
-          #- goos: darwin
-          #  goarch: amd64
-          #  ext: dylib
-          #  runner: macos-latest
+          - goos: darwin
+            goarch: amd64
+            ext: dylib
+            runner: macos-latest
     runs-on: ${{ matrix.runner }}       
     steps:
     - name: Checkout code
@@ -49,7 +49,19 @@ jobs:
     needs: build
     strategy:
       matrix:
-        os: [ubuntu-latest] #, windows-latest, macos-latest]
+        include:
+          - goos: windows
+            goarch: amd64
+            ext: dll
+            runner: windows-latest
+          - goos: linux
+            goarch: amd64
+            ext: so
+            runner: ubuntu-latest
+          - goos: darwin
+            goarch: amd64
+            ext: dylib
+            runner: macos-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
