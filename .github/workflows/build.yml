@@ -12,12 +12,15 @@ jobs:
         include:
           - goos: windows
             goarch: amd64
+            ext: dll
             runner: windows-latest
           - goos: linux
             goarch: amd64
+            ext: so
             runner: ubuntu-latest
           - goos: darwin
             goarch: amd64
+            ext: dylib
             runner: macos-latest
     runs-on: ${{ matrix.runner }}       
     steps:
@@ -27,6 +30,9 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: '1.18'
+    - name: Install MinGW (Windows only)
+      if: matrix.goos == 'windows'
+      run: choco install mingw --version 13.2.0 --force
     - name: Cross-Compile Go Library
       working-directory: jsonatago/golang
       env:
@@ -34,3 +40,8 @@ jobs:
         GOARCH: ${{ matrix.goarch }}
       run: |
         go build -o ../../dist/jsonatago-${{ matrix.goos }}-${{ matrix.goarch }}.so -buildmode=c-shared main.go
+    - name: Upload .so files
+      uses: actions/upload-artifact@v2
+      with:
+        name: shared-libs
+        path: dist/*

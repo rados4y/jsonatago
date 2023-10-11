@@ -1,29 +1,11 @@
-from setuptools import setup, find_packages, Command
+from setuptools import setup, find_packages, 
+import platform
 
-
-class LibBuildCmd(Command):
-    description = "Build Go shared library"
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        go = local["go"]
-        python = local["python"]
-        local.cwd.chdir("jsonatago/golang")
-        with local.env(GOOS="windows", GOARCH="amd64"):
-            go[
-                "build", "-o", "jsonatago_windows.dll", "-buildmode=c-shared", "main.go"
-            ]()
-        with local.env(GOOS="linux", GOARCH="amd64"):
-            go["build", "-o", "jsonatago_linux.so", "-buildmode=c-shared", "main.go"]()
-        with local.env(GOOS="darwin", GOARCH="amd64"):
-            go["build", "-o", "jsonatago_darwin.so", "-buildmode=c-shared", "main.go"]()
-
+ext = "so"
+if platform.system() == "Windows":
+    ext = "dll"
+elif platform.system() == "Darwin":
+    ext = "dylib"
 
 setup(
     name="jsonatago",
@@ -35,17 +17,15 @@ setup(
     packages=find_packages(),
     package_data={
         "jsonatago": [
-            "golang/jsonatago.dll",
-            "golang/jsonatago.so",
-        ],  # or jsonatago.so for Linux
+            f"dist/jsonatago-{platform.system().lower()}.{ext}",
+        ],
     },
     install_requires=[
-        # Your dependencies here
+        # dependencies here
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",  # Alpha status
     ],
     cmdclass={
-        "libbuild": LibBuildCmd,
     },
 )
