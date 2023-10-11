@@ -15,7 +15,7 @@ jobs:
             ext: dll
             runner: windows-latest
           - goos: linux
-            goarchs: ["amd64", "386"]
+            goarchs: ["amd64"]
             ext: so
             runner: ubuntu-latest
           - goos: darwin
