@@ -2,9 +2,18 @@ from setuptools import setup, find_packages
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel  # type: ignore
 import os
 
-goos = os.environ.get("goos")
-goarch = os.environ.get("goarch")
-ext = os.environ.get("ext")
+goos = os.environ.get("GOOS")
+goarch = os.environ.get("GOARCH")
+ext = os.environ.get("EXT")
+
+platforms: list[str] = []
+
+if goos == "linux":
+    platforms.append(f"manylinux2014_{goarch}")
+elif goos == "windows":
+    platforms.append(f"win_{goarch}")
+elif goos == "darwin":
+    platforms.append(f"macosx_10_9_{goarch}")
 
 
 class bdist_wheel(_bdist_wheel):
@@ -16,6 +25,7 @@ class bdist_wheel(_bdist_wheel):
 setup(
     name="jsonatago",
     version="0.2.2",
+    platforms=platforms,
     description="Your package description here",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

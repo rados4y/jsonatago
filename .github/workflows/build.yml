@@ -11,15 +11,15 @@ jobs:
       matrix:
         include:
           - goos: windows
-            goarch: amd64
+            goarchs: [amd64,386]
             ext: dll
             runner: windows-latest
           - goos: linux
-            goarch: amd64
+            goarchs: [amd64,386]
             ext: so
             runner: ubuntu-latest
           - goos: darwin
-            goarch: amd64
+            goarchs: [amd64]
             ext: dylib
             runner: macos-latest
     runs-on: ${{ matrix.runner }}       
@@ -37,9 +37,11 @@ jobs:
       working-directory: jsonatago/golang
       env:
         GOOS: ${{ matrix.goos }}
-        GOARCH: ${{ matrix.goarch }}
       run: |
-        go build -o ../../dist/jsonatago-${{ matrix.goos }}-${{ matrix.goarch }}.so -buildmode=c-shared main.go
+        for goarch in ${{ toJSON(matrix.goarchs) }}; do
+          export GOARCH=$goarch
+          go build -o ../../dist/jsonatago-${{ matrix.goos }}-${{ matrix.goarch }}.so -buildmode=c-shared main.go
+        done
     - name: Upload .so files
       uses: actions/upload-artifact@v2
       with:
@@ -51,18 +53,18 @@ jobs:
       matrix:
         include:
           - goos: windows
-            goarch: amd64
+            goarchs: [amd64,386]
             ext: dll
             runner: windows-latest
           - goos: linux
-            goarch: amd64
+            goarchs: [amd64,386]
             ext: so
             runner: ubuntu-latest
           - goos: darwin
-            goarch: amd64
+            goarchs: [amd64]
             ext: dylib
             runner: macos-latest
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
       - name: Download shared-libs
@@ -79,7 +81,14 @@ jobs:
       - name: Install dependencies
         run: pip install setuptools wheel
       - name: Build wheel
-        run: python setup.py sdist bdist_wheel
+        env:
+          GOOS: ${{ matrix.goos }}
+          EXT: ${{ matrix.ext }}
+        run: |
+          for goarch in ${{ toJSON(matrix.goarchs) }}; do
+            export GOARCH=$goarch
+            python setup.py sdist bdist_wheel
+          done
       - uses: actions/upload-artifact@v3
         with:
           path: ./dist/*.whl
