@@ -25,7 +25,7 @@ jobs:
     runs-on: ${{ matrix.runner }}       
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Setup Go
       uses: actions/setup-go@v2
       with:
@@ -46,12 +46,22 @@ jobs:
         name: shared-libs
         path: dist/*
   build_wheels:
+    needs: build
     strategy:
       matrix:
         os: [ubuntu-latest] #], windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download shared-libs
+        uses: actions/download-artifact@v2
+        with:
+          name: shared-libs
+          path: ./dist
+
+      - name: List package contents
+        run: find . -type f
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16.2
