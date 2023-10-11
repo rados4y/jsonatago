@@ -38,7 +38,7 @@ jobs:
       env:
         GOOS: ${{ matrix.goos }}
       run: |
-        for goarch in ${{ matrix.goarchs }}; do
+        for goarch in ${{ join(matrix.goarchs,' ') }}; do
           export GOARCH=$goarch
           go build -o ../../dist/jsonatago-${{ matrix.goos }}-${goarch}.so -buildmode=c-shared main.go
         done
@@ -85,7 +85,7 @@ jobs:
           GOOS: ${{ matrix.goos }}
           EXT: ${{ matrix.ext }}
         run: |
-          for goarch in ${{ matrix.goarchs }}; do
+          for goarch in ${{ join(matrix.goarchs,' ') }}; do
             export GOARCH=$goarch
             python setup.py sdist bdist_wheel
           done
