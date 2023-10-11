@@ -1,12 +1,10 @@
 from setuptools import setup, find_packages
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel  # type: ignore
-import platform
+import os
 
-ext = "so"
-if platform.system() == "Windows":
-    ext = "dll"
-elif platform.system() == "Darwin":
-    ext = "dylib"
+goos = os.environ.get("goos")
+goarch = os.environ.get("goarch")
+ext = os.environ.get("ext")
 
 
 class bdist_wheel(_bdist_wheel):
@@ -25,7 +23,7 @@ setup(
     packages=find_packages(),
     package_data={
         "jsonatago": [
-            f"dist/jsonatago-{platform.system().lower()}.{ext}",
+            f"dist/jsonatago-{goos}-{goarch}.{ext}",
         ],
     },
     install_requires=[
