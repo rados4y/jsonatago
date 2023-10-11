@@ -11,15 +11,15 @@ jobs:
       matrix:
         include:
           - goos: windows
-            goarchs: [amd64,386]
+            goarchs: ["amd64", "386"]
             ext: dll
             runner: windows-latest
           - goos: linux
-            goarchs: [amd64,386]
+            goarchs: ["amd64", "386"]
             ext: so
             runner: ubuntu-latest
           - goos: darwin
-            goarchs: [amd64]
+            goarchs: ["amd64"]
             ext: dylib
             runner: macos-latest
     runs-on: ${{ matrix.runner }}       
@@ -38,9 +38,9 @@ jobs:
       env:
         GOOS: ${{ matrix.goos }}
       run: |
-        for goarch in ${{ toJSON(matrix.goarchs) }}; do
+        for goarch in ${{ matrix.goarchs }}; do
           export GOARCH=$goarch
-          go build -o ../../dist/jsonatago-${{ matrix.goos }}-${{ matrix.goarch }}.so -buildmode=c-shared main.go
+          go build -o ../../dist/jsonatago-${{ matrix.goos }}-${goarch}.so -buildmode=c-shared main.go
         done
     - name: Upload .so files
       uses: actions/upload-artifact@v2
@@ -53,15 +53,15 @@ jobs:
       matrix:
         include:
           - goos: windows
-            goarchs: [amd64,386]
+            goarchs: ["amd64", "386"]
             ext: dll
             runner: windows-latest
           - goos: linux
-            goarchs: [amd64,386]
+            goarchs: ["amd64", "386"]
             ext: so
             runner: ubuntu-latest
           - goos: darwin
-            goarchs: [amd64]
+            goarchs: ["amd64"]
             ext: dylib
             runner: macos-latest
     runs-on: ${{ matrix.runner }}
@@ -85,7 +85,7 @@ jobs:
           GOOS: ${{ matrix.goos }}
           EXT: ${{ matrix.ext }}
         run: |
-          for goarch in ${{ toJSON(matrix.goarchs) }}; do
+          for goarch in ${{ matrix.goarchs }}; do
             export GOARCH=$goarch
             python setup.py sdist bdist_wheel
           done
