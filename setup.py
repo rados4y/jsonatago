@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages, 
+from setuptools import setup, find_packages
 import platform
 
 ext = "so"
@@ -26,6 +26,5 @@ setup(
     classifiers=[
         "Development Status :: 3 - Alpha",  # Alpha status
     ],
-    cmdclass={
-    },
+    cmdclass={},
 )
