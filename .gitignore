@@ -1,5 +1,7 @@
 /.pytest_cache
 /dist
+/build
+/.eggs
 /jsonatago.egg-info
 /NOTE.md
 /Pipfile.lock
@@ -7,3 +9,4 @@
 **/*.dll
 **/*.so
 **/*.h
+
