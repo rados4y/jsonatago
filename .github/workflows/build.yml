@@ -46,6 +46,6 @@ jobs:
       run: |
         python -m cibuildwheel --output-dir wheelhouse
       env:
-        CIBW_BEFORE_ALL_LINUX: ".github/install_go.sh"
+        CIBW_BEFORE_ALL_LINUX: "./ci/install_go.sh"
     - name: List package contents
       run: find . -type f
