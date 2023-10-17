@@ -47,5 +47,6 @@ jobs:
         python -m cibuildwheel --output-dir wheelhouse
       env:
         CIBW_BEFORE_ALL_LINUX: "./ci/install_go.sh"
+        CIBW_ENVIRONMENT: PATH=$PATH:usr/local/go/bin
     - name: List package contents
       run: find . -type f
