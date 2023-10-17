@@ -13,6 +13,7 @@ then
     export GOPATH=$HOME/go
     go version
     which go
+    ls /usr/local/go/bin/
 else
     echo "Unsupported OS - yum not available"
     exit 1
