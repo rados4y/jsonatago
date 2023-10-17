@@ -48,6 +48,6 @@ jobs:
       env:
         CIBW_BEFORE_ALL_LINUX: "./ci/install_go.sh"
         CIBW_ENVIRONMENT: PATH=$PATH:usr/local/go/bin
-        CIBW_BEFORE_BUILD: ./ci/install_go.sh && ls usr/local/go/bin && which go && go version
+        CIBW_BEFORE_BUILD: ./ci/install_go.sh && ls /usr/local/go/bin && which go && go version
     - name: List package contents
       run: find . -type f
