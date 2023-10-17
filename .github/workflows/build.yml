@@ -2,27 +2,15 @@ name: Build and Publish
 
 on:
   push:
-    branches: [ main ]
+    branches: [ capi ]
   workflow_dispatch:
 
 jobs:
   build:
     strategy:
       matrix:
-        include:
-          - goos: windows
-            goarch: amd64
-            ext: dll
-            runner: windows-latest
-          - goos: linux
-            goarch: amd64
-            ext: so
-            runner: ubuntu-latest
-          - goos: darwin
-            goarch: amd64
-            ext: dylib
-            runner: macos-latest
-    runs-on: ${{ matrix.runner }}       
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    runs-on: ${{ matrix.os }}       
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -31,55 +19,18 @@ jobs:
       with:
         go-version: '1.18'
     - name: Install MinGW (Windows only)
-      if: matrix.goos == 'windows'
+      if: matrix.os == 'windows-latest'
       run: choco install mingw --version 13.2.0 --force
-    - name: Cross-Compile Go Library
-      working-directory: jsonatago/golang
-      env:
-        GOOS: ${{ matrix.goos }}
-        GOARCH: ${{ matrix.goarch }}
-      run: |
-        go build -o ../../dist/jsonatago-${{ matrix.goos }}-${{ matrix.goarch }}.so -buildmode=c-shared main.go
-    - name: Upload .so files
-      uses: actions/upload-artifact@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        name: shared-libs
-        path: dist/*
-  build_wheels:
-    needs: build
-    strategy:
-      matrix:
-        include:
-          - goos: windows
-            goarch: amd64
-            ext: dll
-            runner: windows-latest
-          - goos: linux
-            goarch: amd64
-            ext: so
-            runner: ubuntu-latest
-          - goos: darwin
-            goarch: amd64
-            ext: dylib
-            runner: macos-latest
-    runs-on: ${{ matrix.runner }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download shared-libs
-        uses: actions/download-artifact@v2
-        with:
-          name: shared-libs
-          path: ./dist
-      - name: List package contents
-        run: find . -type f
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-      - name: Install dependencies
-        run: pip install setuptools wheel
-      - name: Build wheel
-        run: python setup.py sdist bdist_wheel
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./dist/*.whl
+        python-version: '3.6'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install cibuildwheel
+    - name: Build wheels
+      run: |
+        python -m cibuildwheel --output-dir wheelhouse
+    - name: List package contents
+      run: find . -type f

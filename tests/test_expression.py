@@ -1,3 +1,4 @@
+import pytest
 from jsonatago import Jsonata  # type:ignore
 
 JSONATA_TEST_DATA = """
@@ -78,7 +79,12 @@ JSONATA_TEST_DATA = """
 
 
 def test_evaluate():
-    print("running")
-    for i in range(1000000):
-        expr = Jsonata("$sum(Account.Order.Product.(Price * Quantity))")
-        result = expr.evaluate(JSONATA_TEST_DATA)
+    expr = Jsonata("$sum(Account.Order.Product.(Price * Quantity))")
+    result = expr.evaluate(JSONATA_TEST_DATA)
+    assert result == "336.36"
+
+
+def test_evaluate_error():
+    with pytest.raises(Exception) as exc_info:
+        expr = Jsonata("<")
+    assert "compilation failed" in str(exc_info.value)

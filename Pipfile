@@ -5,17 +5,17 @@ name = "pypi"
 
 [packages]
 jsonatago = {file = ".", editable = true}
-wheel = "*"
 
 [dev-packages]
-plumbum = "*"
 twine = "*"
+wheel = "*"
 pytest = "*"
 
 [scripts]
+dev = "python setup.py build_ext --inplace"
+clean = "rm -rf build dist jsonatago.egg-info"
+wheel = "python setup.py bdist_wheel"
 test = "pytest -s"
-libbuild = "python setup.py libbuild"
-dist = "python setup.py sdist"
 release = "twine upload dist/*"
 
 [requires]

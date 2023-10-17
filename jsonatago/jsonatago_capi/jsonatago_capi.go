@@ -3,7 +3,6 @@ package main
 import (
 	"C"
 	"encoding/json"
-	"fmt"
 	"sync"
 
 	"github.com/blues/jsonata-go"
@@ -15,19 +14,17 @@ var (
 )
 
 //export CompileJSONata
-func CompileJSONata(id *C.char, expression *C.char, resultCode **C.char, resultExpression **C.char) {
+func CompileJSONata(id *C.char, expression *C.char, resultError **C.char) {
 	expr, err := jsonata.Compile(C.GoString(expression))
 	if err != nil {
-		*resultCode = C.CString("CompileError")
-		*resultExpression = expression
+		*resultError = C.CString(err.Error())
 		return
 	}
 	mapMutex.Lock()
 	exprMap[C.GoString(id)] = expr
 	mapMutex.Unlock()
 
-	*resultCode = C.CString("OK")
-	*resultExpression = expression
+	*resultError = C.CString("")
 }
 
 //export FreeJSONata
@@ -38,13 +35,13 @@ func FreeJSONata(id *C.char) {
 }
 
 //export EvaluateJSONata
-func EvaluateJSONata(id *C.char, jsonData *C.char, resultCode **C.char, result **C.char) {
+func EvaluateJSONata(id *C.char, jsonData *C.char, resultError **C.char, result **C.char) {
 	mapMutex.RLock()
 	expr, exists := exprMap[C.GoString(id)]
 	mapMutex.RUnlock()
 
 	if !exists {
-		*resultCode = C.CString("InvalidID")
+		*resultError = C.CString("invalid identifier of object")
 		*result = C.CString("")
 		return
 	}
@@ -52,29 +49,28 @@ func EvaluateJSONata(id *C.char, jsonData *C.char, resultCode **C.char, result *
 	var input interface{}
 	err := json.Unmarshal([]byte(C.GoString(jsonData)), &input)
 	if err != nil {
-		*resultCode = C.CString("UnmarshalError")
+		*resultError = C.CString(err.Error())
 		*result = C.CString("")
 		return
 	}
 
 	evalResult, err := expr.Eval(input)
 	if err != nil {
-		*resultCode = C.CString("EvaluateError")
+		*resultError = C.CString(err.Error())
 		*result = C.CString("")
 		return
 	}
 
 	resultBytes, err := json.Marshal(evalResult)
 	if err != nil {
-		*resultCode = C.CString("MarshalError")
+		*resultError = C.CString(err.Error())
 		*result = C.CString("")
 		return
 	}
 
-	*resultCode = C.CString("OK")
+	*resultError = C.CString("")
 	*result = C.CString(string(resultBytes))
 }
 
 func main() {
-	fmt.Println("Hello, Modules2! This is mypackage speaking!")
 }
