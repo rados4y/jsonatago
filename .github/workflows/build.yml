@@ -14,6 +14,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Setup Go
       uses: actions/setup-go@v4
       with:
@@ -44,6 +46,6 @@ jobs:
       run: |
         python -m cibuildwheel --output-dir wheelhouse
       env:
-        CIBW_BEFORE_BUILD: "apt-get update && apt-get install -y golang"
+        CIBW_BEFORE_ALL_LINUX: "./.github/install_go.sh"
     - name: List package contents
       run: find . -type f
