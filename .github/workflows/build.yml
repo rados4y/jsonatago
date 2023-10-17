@@ -43,5 +43,7 @@ jobs:
     - name: Build wheels
       run: |
         python -m cibuildwheel --output-dir wheelhouse
+      env:
+        CIBW_BEFORE_BUILD: "apt-get update && apt-get install -y golang"
     - name: List package contents
       run: find . -type f
