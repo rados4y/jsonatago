@@ -1,5 +1,24 @@
 #!/bin/bash
 
+# Function to determine the package manager
+install_wget() {
+    if command -v wget > /dev/null; then
+        echo "wget is already installed"
+    else
+        if command -v apt-get > /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y wget
+        elif command -v yum > /dev/null; then
+            sudo yum -y update
+            sudo yum -y install wget
+        else
+            echo "Neither apt-get nor yum are available"
+            exit 1
+        fi
+    fi
+}
+install_wget
+
 architecture=$(uname -m)
 
 case $architecture in
