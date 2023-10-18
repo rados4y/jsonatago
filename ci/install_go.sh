@@ -6,11 +6,11 @@ install_wget() {
         echo "wget is already installed"
     else
         if command -v apt-get > /dev/null; then
-            sudo apt-get update
-            sudo apt-get install -y wget
+            apt-get update
+            apt-get install -y wget
         elif command -v yum > /dev/null; then
-            sudo yum -y update
-            sudo yum -y install wget
+            yum -y update
+            yum -y install wget
         else
             echo "Neither apt-get nor yum are available"
             exit 1
