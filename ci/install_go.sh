@@ -32,8 +32,8 @@ then
     esac
     yum -y update
     yum -y install wget
-    wget -q "$url"
-    tar -C /usr/local -xzf go1.18.linux-amd64.tar.gz
+    wget -q "$url" -O go.tar.gz
+    tar -C /usr/local -xzf go.tar.gz
     echo "export PATH=$PATH:/usr/local/go/bin" >> $HOME/.bash_profile
     source $HOME/.bash_profile
     export PATH=/usr/local/go/bin:$PATH
