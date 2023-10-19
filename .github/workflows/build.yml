@@ -45,5 +45,3 @@ jobs:
     - name: Build wheels
       run: |
         python -m cibuildwheel --output-dir wheelhouse
-    - name: List package contents
-      run: find . -type f
