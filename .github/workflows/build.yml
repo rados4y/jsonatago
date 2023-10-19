@@ -49,6 +49,6 @@ jobs:
         CIBW_BEFORE_ALL_LINUX: "./ci/install_go.sh"
         CIBW_ENVIRONMENT: PATH=$PATH:/usr/local/go/bin
         CIBW_BEFORE_BUILD: go version
-        CIBW_SKIP: "*musllinux*" # skip musllinux builds
+        CIBW_BUILD: "*musllinux*" # skip musllinux builds
     - name: List package contents
       run: find . -type f

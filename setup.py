@@ -2,21 +2,6 @@ from setuptools import setup, find_packages, Extension
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel  # type: ignore
 import os
 
-"""
-goos = os.environ.get("GOOS")
-goarch = os.environ.get("GOARCH")
-ext = os.environ.get("EXT")
-
-platforms: list[str] = []
-
-if goos == "linux":
-    platforms.append(f"manylinux2014_{goarch}")
-elif goos == "windows":
-    platforms.append(f"win_{goarch}")
-elif goos == "darwin":
-    platforms.append(f"macosx_10_9_{goarch}")
-"""
-
 
 class bdist_wheel(_bdist_wheel):
     def finalize_options(self):
@@ -31,15 +16,10 @@ setup(
     description="Your package description here",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/rados4y/jsonatago",  # Homepage link
+    url="https://github.com/rados4y/jsonatago",
     packages=find_packages(),
     python_requires=">=3.6",
     setup_requires=["setuptools-golang>=0.2.0"],
-    # package_data={
-    #    "jsonatago": [
-    #        f"dist/jsonatago-{goos}-{goarch}.{ext}",
-    #    ],
-    # },
     install_requires=[
         # dependencies here
     ],

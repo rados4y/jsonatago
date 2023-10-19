@@ -10,6 +10,7 @@ jsonatago = {file = ".", editable = true}
 twine = "*"
 wheel = "*"
 pytest = "*"
+cibuildwheel = "*"
 
 [scripts]
 dev = "python setup.py build_ext --inplace"
