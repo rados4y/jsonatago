@@ -11,6 +11,7 @@ twine = "*"
 wheel = "*"
 pytest = "*"
 cibuildwheel = "*"
+setuptools-golang = "*"
 
 [scripts]
 dev = "python setup.py build_ext --inplace"
