@@ -4,5 +4,8 @@ environment = "PATH=$PATH:/usr/local/go/bin"
 #build = "*cp36-manylinux_i686*"
 
 [tool.cibuildwheel.windows]
-build = "cp*amd64*"
+#build = "cp*amd64*"
+build = "cp*win32*"
+environment = "GOARCH='386'"
+
 
