@@ -19,7 +19,7 @@ setup(
     url="https://github.com/rados4y/jsonatago",
     packages=find_packages(),
     python_requires=">=3.6",
-    setup_requires=["setuptools-golang>=0.2.0"],
+    setup_requires=["setuptools-golang>=2.9.0"],
     install_requires=[
         # dependencies here
     ],
