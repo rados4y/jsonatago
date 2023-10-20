@@ -10,3 +10,4 @@
 **/*.so
 **/*.h
 /wheelhouse
+jsonatago/jsonatago_capi.pyd

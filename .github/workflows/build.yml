@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-wheels:
     strategy:
       matrix:
         os: [windows-latest] #,macOS-latest,ubuntu-latest,windows-latest]
@@ -26,7 +26,7 @@ jobs:
         go version
     - name: Install MinGW (Windows only)
       if: matrix.os == 'windows-latest'
-      run: choco install mingw --version 13.2.0 --x86 --force
+      run: choco install mingw --version 13.2.0 --force
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -44,4 +44,44 @@ jobs:
         pytest -s -v
     - name: Build wheels
       run: |
-        python -m cibuildwheel --output-dir wheelhouse
+        cibuildwheel --output-dir wheelhouse
+    - uses: actions/upload-artifact@v3
+      with:
+        name: wheels
+        path: ./wheelhouse/*.whl
+
+  build_sdist:
+    name: Make SDist
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        submodules: true
+
+    - name: Build SDist
+      run: pipx run build --sdist
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: sdist
+        path: dist/*.tar.gz
+
+  upload_all:
+    needs: [build-wheels, build_sdist]
+    environment: pypi
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: wheels
+        path: dist
+    - uses: actions/download-artifact@v3
+      with:
+        name: sdist
+        path: dist
+
+    - uses: pypa/gh-action-pypi-publish@release/v1
