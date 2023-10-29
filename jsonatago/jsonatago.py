@@ -3,7 +3,7 @@ import json
 from .jsonatago_capi import compile, free_compile, evaluate, compile_evaluate  # type: ignore
 
 
-def jeval(expression: str, jsonData: Any, raw: bool = False) -> Any:
+def jeval(jsonData: Any, expression: str, raw: bool = False) -> Any:
     code: str
     result: str
     if not isinstance(jsonData, str):

@@ -1,5 +1,5 @@
 import pytest
-from jsonatago import Jsonata  # , jeval  # type:ignore
+from jsonatago import Jsonata, jeval  # type:ignore
 
 JSONATA_TEST_DATA = """
 {
@@ -126,3 +126,9 @@ def test_evaluate_error():
     with pytest.raises(Exception) as exc_info:
         Jsonata("<")
     assert "compilation failed" in str(exc_info.value)
+
+
+def test_jeval():
+    assert 336.36 == jeval(
+        JSONATA_TEST_DATA, "$sum(Account.Order.Product.(Price * Quantity))"
+    )
