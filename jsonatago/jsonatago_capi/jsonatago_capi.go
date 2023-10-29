@@ -13,6 +13,39 @@ var (
 	mapMutex sync.RWMutex
 )
 
+//export CompileEvaluateJSONata
+func CompileEvaluateJSONata(expression *C.char, jsonData *C.char, resultError **C.char, result **C.char) {
+	expr, err := jsonata.Compile(C.GoString(expression))
+	if err != nil {
+		*resultError = C.CString(err.Error())
+		return
+	}
+	var input interface{}
+	err = json.Unmarshal([]byte(C.GoString(jsonData)), &input)
+	if err != nil {
+		*resultError = C.CString(err.Error())
+		*result = C.CString("")
+		return
+	}
+
+	evalResult, err := expr.Eval(input)
+	if err != nil {
+		*resultError = C.CString(err.Error())
+		*result = C.CString("")
+		return
+	}
+
+	resultBytes, err := json.Marshal(evalResult)
+	if err != nil {
+		*resultError = C.CString(err.Error())
+		*result = C.CString("")
+		return
+	}
+
+	*resultError = C.CString("")
+	*result = C.CString(string(resultBytes))
+}
+
 //export CompileJSONata
 func CompileJSONata(id *C.char, expression *C.char, resultError **C.char) {
 	expr, err := jsonata.Compile(C.GoString(expression))

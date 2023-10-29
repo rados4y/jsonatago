@@ -4,10 +4,10 @@
 extern void CompileJSONata(char* id, char* expression, char** resultError);
 extern void FreeJSONata(char* id);
 extern void EvaluateJSONata(char* id, char* jsonData, char** resultError, char** result);
-
+extern void CompileEvaluateJSONata(char* expression, char* jsonData, char** resultError, char** result);
 
 // Function to be called from Python - CompileJSONata
-static PyObject* compile_jsonata(PyObject* self, PyObject* args) {
+static PyObject* compile(PyObject* self, PyObject* args) {
     const char* id;
     const char* expression;
     char* resultError;
@@ -25,7 +25,7 @@ static PyObject* compile_jsonata(PyObject* self, PyObject* args) {
 }
 
 // Function to be called from Python - FreeJSONata
-static PyObject* free_jsonata(PyObject* self, PyObject* args) {
+static PyObject* free_compile(PyObject* self, PyObject* args) {
     const char* id;
 
     if (!PyArg_ParseTuple(args, "s", &id)) {
@@ -38,7 +38,7 @@ static PyObject* free_jsonata(PyObject* self, PyObject* args) {
 }
 
 // Function to be called from Python - EvaluateJSONata
-static PyObject* evaluate_jsonata(PyObject* self, PyObject* args) {
+static PyObject* evaluate(PyObject* self, PyObject* args) {
     const char* id;
     const char* jsonData;
     char* resultError;
@@ -57,11 +57,33 @@ static PyObject* evaluate_jsonata(PyObject* self, PyObject* args) {
     return ret;
 }
 
+// Function to be called from Python - EvaluateJSONata
+static PyObject* compile_evaluate(PyObject* self, PyObject* args) {
+    const char* expression;
+    const char* jsonData;
+    char* resultError;
+    char* result;
+
+    if (!PyArg_ParseTuple(args, "ss", &expression, &jsonData)) {
+        return NULL;
+    }
+
+    CompileEvaluateJSONata((char*)expression, (char*)jsonData, &resultError, &result);
+
+    PyObject* ret = Py_BuildValue("ss", resultError, result);
+    free(resultError); // resultCode is allocated in Go code, it needs to be freed after use
+    free(result);     // result is allocated in Go code, it needs to be freed after use
+
+    return ret;
+}
+
+
 // Define methods in the module
 static PyMethodDef JsonataMethods[] = {
-    {"compile_jsonata", compile_jsonata, METH_VARARGS, "Compile JSONata expression"},
-    {"free_jsonata", free_jsonata, METH_VARARGS, "Free JSONata expression"},
-    {"evaluate_jsonata", evaluate_jsonata, METH_VARARGS, "Evaluate JSONata expression"},
+    {"compile", compile, METH_VARARGS, "Compile JSONata expression"},
+    {"free_compile", free_compile, METH_VARARGS, "Free JSONata expression"},
+    {"evaluate", evaluate, METH_VARARGS, "Evaluate JSONata expression"},
+    {"compile_evaluate", compile_evaluate, METH_VARARGS, "Compile and evaluate JSONata expression"},
     {NULL, NULL, 0, NULL}
 };
 

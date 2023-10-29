@@ -11,7 +11,7 @@ class bdist_wheel(_bdist_wheel):
 
 setup(
     name="jsonatago",
-    version="0.2.2",
+    version="0.2.3",
     # platforms=platforms,
     description="Your package description here",
     long_description=open("README.md").read(),
