@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages, Extension
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel  # type: ignore
-import os
+
+# import os
 
 
 class bdist_wheel(_bdist_wheel):
@@ -11,7 +12,7 @@ class bdist_wheel(_bdist_wheel):
 
 setup(
     name="jsonatago",
-    version="0.2.3",
+    version="0.2.5",
     # platforms=platforms,
     description="Your package description here",
     long_description=open("README.md").read(),
