@@ -1,0 +1,30 @@
+name: Test Published Package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test_upload:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.8, 3.9, 3.10]
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install released package
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        pip install jsonatago
+    - name: Run tests
+      run: |
+        cd tests
+        pytest -s -v
