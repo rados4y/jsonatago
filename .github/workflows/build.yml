@@ -3,6 +3,9 @@ name: Build and Publish
 on:
   push:
     branches: [ main ]
+  release:
+    types:
+      - published
   workflow_dispatch:
 
 jobs:
@@ -83,7 +86,6 @@ jobs:
       with:
         name: sdist
         path: dist
-
     - uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
