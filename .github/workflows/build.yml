@@ -2,84 +2,89 @@ name: Build and Publish
 
 on:
   push:
-    branches: [ main ]
+    branches: [ capi ]
   workflow_dispatch:
 
 jobs:
-  build:
+  build-wheels:
     strategy:
       matrix:
-        include:
-          - goos: windows
-            goarch: amd64
-            ext: dll
-            runner: windows-latest
-          - goos: linux
-            goarch: amd64
-            ext: so
-            runner: ubuntu-latest
-          - goos: darwin
-            goarch: amd64
-            ext: dylib
-            runner: macos-latest
-    runs-on: ${{ matrix.runner }}       
+        os: [windows-latest] #,macOS-latest,ubuntu-latest,windows-latest]
+    runs-on: ${{ matrix.os }}       
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Setup Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v4
       with:
         go-version: '1.18'
-    - name: Install MinGW (Windows only)
-      if: matrix.goos == 'windows'
-      run: choco install mingw --version 13.2.0 --force
-    - name: Cross-Compile Go Library
-      working-directory: jsonatago/golang
-      env:
-        GOOS: ${{ matrix.goos }}
-        GOARCH: ${{ matrix.goarch }}
+    - name: check go installation
       run: |
-        go build -o ../../dist/jsonatago-${{ matrix.goos }}-${{ matrix.goarch }}.so -buildmode=c-shared main.go
-    - name: Upload .so files
-      uses: actions/upload-artifact@v2
+        which go
+        go version
+    - name: Install MinGW (Windows only)
+      if: matrix.os == 'windows-latest'
+      run: choco install mingw --version 13.2.0 --force
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        name: shared-libs
-        path: dist/*
-  build_wheels:
-    needs: build
-    strategy:
-      matrix:
-        include:
-          - goos: windows
-            goarch: amd64
-            ext: dll
-            runner: windows-latest
-          - goos: linux
-            goarch: amd64
-            ext: so
-            runner: ubuntu-latest
-          - goos: darwin
-            goarch: amd64
-            ext: dylib
-            runner: macos-latest
-    runs-on: ${{ matrix.runner }}
+        python-version: '3.11.5'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install cibuildwheel
+    - name: Install package
+      run: |
+        python -m pip install .
+        pip install pytest
+    - name: Run tests
+      run: |
+        pytest -s -v
+    - name: Build wheels
+      run: |
+        cibuildwheel --output-dir wheelhouse
+    - uses: actions/upload-artifact@v3
+      with:
+        name: wheels
+        path: ./wheelhouse/*.whl
+
+  build_sdist:
+    name: Make SDist
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Download shared-libs
-        uses: actions/download-artifact@v2
-        with:
-          name: shared-libs
-          path: ./dist
-      - name: List package contents
-        run: find . -type f
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-      - name: Install dependencies
-        run: pip install setuptools wheel
-      - name: Build wheel
-        run: python setup.py sdist bdist_wheel
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./dist/*.whl
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        submodules: true
+
+    - name: Build SDist
+      run: pipx run build --sdist
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: sdist
+        path: dist/*.tar.gz
+
+  upload_all:
+    needs: [build-wheels, build_sdist]
+    environment: pypi
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: wheels
+        path: dist
+    - uses: actions/download-artifact@v3
+      with:
+        name: sdist
+        path: dist
+
+    - uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_TOKEN }}

@@ -1,19 +1,6 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel  # type: ignore
 import os
-
-goos = os.environ.get("GOOS")
-goarch = os.environ.get("GOARCH")
-ext = os.environ.get("EXT")
-
-platforms: list[str] = []
-
-if goos == "linux":
-    platforms.append(f"manylinux2014_{goarch}")
-elif goos == "windows":
-    platforms.append(f"win_{goarch}")
-elif goos == "darwin":
-    platforms.append(f"macosx_10_9_{goarch}")
 
 
 class bdist_wheel(_bdist_wheel):
@@ -24,25 +11,31 @@ class bdist_wheel(_bdist_wheel):
 
 setup(
     name="jsonatago",
-    version="0.2.2",
-    platforms=platforms,
+    version="0.2.3",
+    # platforms=platforms,
     description="Your package description here",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/rados4y/jsonatago",  # Homepage link
+    url="https://github.com/rados4y/jsonatago",
     packages=find_packages(),
-    package_data={
-        "jsonatago": [
-            f"dist/jsonatago-{goos}-{goarch}.{ext}",
-        ],
-    },
+    python_requires=">=3.8",
+    setup_requires=["setuptools-golang>=2.8.0"],
     install_requires=[
         # dependencies here
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",  # Alpha status
     ],
+    ext_modules=[
+        Extension(
+            "jsonatago.jsonatago_capi",
+            ["jsonatago/jsonatago_capi/jsonatago_capi.go"],
+            py_limited_api=True,
+            define_macros=[("Py_LIMITED_API", None)],
+        ),
+    ],
     cmdclass={
         "bdist_wheel": bdist_wheel,
     },
+    build_golang={"root": "jsonatago_capi"},
 )

@@ -1,0 +1,10 @@
+[tool.cibuildwheel.linux]
+before-all = "./ci/install_go.sh"
+environment = "PATH=$PATH:/usr/local/go/bin"
+
+[tool.cibuildwheel.windows]
+build = "cp*amd64*"
+#build = "cp*win32*"
+#environment = "GOARCH='386'"
+
+
