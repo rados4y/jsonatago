@@ -3,7 +3,7 @@ import json
 from .jsonatago_capi import compile, free_compile, evaluate, compile_evaluate  # type: ignore
 
 
-def jeval(expression: str, jsonData: str | Any, raw=False) -> Any:
+def jeval(expression: str, jsonData: Any, raw: bool = False) -> Any:
     code: str
     result: str
     if not isinstance(jsonData, str):
@@ -22,7 +22,7 @@ class Jsonata:
     def __del__(self):
         free_compile(str(id(self)))
 
-    def evaluate(self, jsonData: str | Any, raw=False) -> Any:
+    def evaluate(self, jsonData: Any, raw: bool = False) -> Any:
         code: str
         result: str
         if not isinstance(jsonData, str):
@@ -31,7 +31,7 @@ class Jsonata:
         return result_to_python(code, result, raw)  # type:ignore
 
 
-def result_to_python(code: str, result: str, raw=False) -> Any:
+def result_to_python(code: str, result: str, raw: bool = False) -> Any:
     # no result
     if code == "no results found":
         return None
@@ -57,6 +57,6 @@ def result_to_python(code: str, result: str, raw=False) -> Any:
     # try number
     try:
         return float(result)
-    finally:
+    except ValueError:
         pass
     return result
