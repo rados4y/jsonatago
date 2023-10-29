@@ -2,7 +2,7 @@ name: Build and Publish
 
 on:
   push:
-    branches: [ capi ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
