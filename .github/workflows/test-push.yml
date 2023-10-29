@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-wheels:
+  test:
     strategy:
       matrix:
         os: [ubuntu-latest]
