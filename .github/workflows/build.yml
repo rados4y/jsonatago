@@ -39,6 +39,7 @@ jobs:
         pip install cibuildwheel
     - name: Install package
       run: |
+        python setup.py build_ext --inplace
         python -m pip install .
         pip install pytest
     - name: Run tests
