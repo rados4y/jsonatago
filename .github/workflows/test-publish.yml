@@ -13,8 +13,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     
     steps:
-    - name: Checkout repository
+    - name: Checkout tests directory
       uses: actions/checkout@v4
+      with:
+        path: tests
+        sparse-checkout: tests
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
